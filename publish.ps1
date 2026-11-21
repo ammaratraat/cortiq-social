@@ -1,0 +1,28 @@
+# Renders HTML slides to 1080x1350 PNGs, pushes them to GitHub, prints public raw URLs.
+# Usage: .\publish.ps1 slide1.html slide2.html ...
+param([Parameter(Mandatory, ValueFromRemainingArguments)][string[]]$Html)
+$ErrorActionPreference = 'Stop'
+$repo = $PSScriptRoot
+$chrome = "$env:ProgramFiles\Google\Chrome\Application\chrome.exe"
+$day = Get-Date -Format 'yyyy-MM-dd'
+$out = Join-Path $repo "posts\$day"
+New-Item -ItemType Directory -Force $out | Out-Null
+
+$names = foreach ($h in $Html) {
+  $src = (Resolve-Path $h).Path
+  $name = [IO.Path]::GetFileNameWithoutExtension($src) + '.png'
+  $png = Join-Path $out $name
+  # virtual-time-budget lets web fonts load before the screenshot
+  & $chrome --headless=new --disable-gpu --hide-scrollbars --window-size=1080,1350 `
+    --virtual-time-budget=5000 "--screenshot=$png" "file:///$($src -replace '\\','/')" 2>$null | Out-Null
+  if (-not (Test-Path $png)) { throw "Render failed: $h" }
+  Copy-Item $src (Join-Path $out ([IO.Path]::GetFileName($src))) -Force
+  $name
+}
+
+git -C $repo add posts | Out-Null
+git -C $repo commit -m "posts $day" | Out-Null
+git -C $repo push -u origin master 2>&1 | Out-Null
+if ($LASTEXITCODE) { throw 'git push failed' }
+
+foreach ($n in $names) { "https://raw.githubusercontent.com/ammaratraat/cortiq-social/master/posts/$day/$n" }
