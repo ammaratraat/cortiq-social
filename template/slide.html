@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* Cortiq app palette (app/app/globals.css) */
+  :root { --navy:#092d43; --teal:#0dc1b7; --accent:#08847f; --egg:#fbfaf7; --mint:#e4f3ef; --border:#dbe5e3; --muted:#5b6f76; }
+  * { margin:0; box-sizing:border-box; }
+  body { width:1080px; height:1350px; font-family:'Instrument Sans','Inter',sans-serif; color:var(--navy);
+         background:var(--egg); padding:70px 76px; display:flex; flex-direction:column; }
+  header { display:flex; justify-content:space-between; align-items:center; }
+  .pill { background:var(--navy); color:#fff; font-weight:600; font-size:30px; padding:12px 30px; border-radius:40px; }
+  .pill i { font-style:normal; color:var(--teal); }
+  .subject { font-size:28px; font-weight:600; color:var(--accent); background:var(--mint); padding:10px 24px; border-radius:30px; }
+  .card { font-size:42px; margin-top:48px; background:#fff; border:2px solid var(--border); border-radius:32px; padding:48px;
+          box-shadow:0 10px 30px rgba(9,45,67,.06); }
+  .stem { font-size:1em; line-height:1.45; font-weight:500; }
+  ul { list-style:none; padding:0; margin-top:38px; display:grid; gap:20px; }
+  li { display:flex; align-items:center; gap:24px; border:2px solid var(--border); border-radius:20px;
+       padding:.45em .6em; font-size:.86em; font-weight:500; }
+  li b { flex:none; width:1.55em; height:1.55em; border-radius:50%; background:var(--mint); color:var(--accent);
+         display:grid; place-items:center; font-size:.8em; }
+  .answer { margin-top:0; }
+  .answer h2 { font-size:.95em; color:#fff; background:var(--accent); border-radius:20px; padding:20px 28px; }
+  .answer p { font-size:.78em; line-height:1.55; margin-top:26px; color:#1d3d50; }
+  .key { margin-top:26px; background:var(--mint); border-left:8px solid var(--teal); border-radius:14px;
+         padding:20px 24px; font-size:.78em; line-height:1.45; }
+  .key b { color:var(--accent); display:block; font-size:.8em; text-transform:uppercase; letter-spacing:.06em; }
+  footer { margin-top:auto; display:flex; justify-content:space-between; align-items:center; }
+  footer span { font-size:30px; font-weight:600; color:var(--muted); }
+  footer img { height:120px; border-radius:16px; }
+</style>
+</head>
+<body>
+  <header><div class="pill"><i>SMLE</i> · {{TAG}}</div><div class="subject">{{SUBJECT}}</div></header>
+  <div class="card">
+    <div class="stem">{{STEM}}</div>
+    {{BODY}}
+  </div>
+  <footer><span>{{FOOT}}</span><img src="../template/logo.png" alt="Cortiq"></footer>
+<script>
+  // shrink text until the slide fits 1350px (questions vary a lot in length)
+  const card = document.querySelector('.card'), foot = document.querySelector('footer');
+  document.fonts.ready.then(() => {
+    let f = 42;
+    while (foot.getBoundingClientRect().bottom > 1290 && f > 22) card.style.fontSize = (--f) + 'px';
+  });
+</script>
+</body>
+</html>
