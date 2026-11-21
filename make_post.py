@@ -93,7 +93,9 @@ def main():
     if args[:1] == ["--qid"]:
         pool = [p for p in pool if p["qid"] == int(args[1])]
     assert pool, "no unused question left that passes the filters"
-    post = random.choice(pool)
+    # user wants hard USMLE-style questions: draw from the longest (most vignette-like) third
+    pool.sort(key=lambda p: len(p["stem"]), reverse=True)
+    post = random.choice(pool[:max(1, len(pool) // 3)])
     post["pool_left"] = len(pool)
     render(post)
     sys.stdout.reconfigure(encoding="utf-8")

@@ -13,7 +13,10 @@ for ($i = 0; $i -lt $Images.Count; $i++) {
   if ($i -eq 0) { $m.caption = $text }
   $media += $m; $files += '-F', "p$i=@$((Resolve-Path $Images[$i]).Path)"
 }
-$json = ConvertTo-Json -InputObject $media -Compress
-$out = & curl.exe -s "https://api.telegram.org/bot$token/sendMediaGroup" --form-string 'chat_id=@CORTIQME' --form-string "media=$json" @files
+# JSON goes via a file: PowerShell 5.1 strips the quotes from JSON passed as a native argument
+$jsonFile = [IO.Path]::GetTempFileName()
+[IO.File]::WriteAllText($jsonFile, (ConvertTo-Json -InputObject $media -Compress))
+$out = & curl.exe -s "https://api.telegram.org/bot$token/sendMediaGroup" --form-string 'chat_id=@CORTIQME' -F "media=<$jsonFile" @files
+Remove-Item $jsonFile
 if ($out -notmatch '"ok":true') { throw "Telegram error: $out" }
 'Telegram: posted'
