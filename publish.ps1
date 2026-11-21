@@ -26,5 +26,7 @@ git -C $repo commit -m "posts $day" | Out-Null
 git -C $repo push -q -u origin master
 if ($LASTEXITCODE) { throw 'git push failed' }
 
-foreach ($n in $names) { "https://raw.githubusercontent.com/ammaratraat/cortiq-social/master/posts/$day/$n" }
+# commit-pinned URLs: branch URLs are CDN-cached ~5 min and could serve an older image
+$sha = git -C $repo rev-parse HEAD
+foreach ($n in $names) { "https://raw.githubusercontent.com/ammaratraat/cortiq-social/$sha/posts/$day/$n" }
 
